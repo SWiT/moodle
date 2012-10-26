@@ -1053,14 +1053,19 @@ class assign {
     public function count_submissions_need_grading() {
         global $DB;
 
-        $params = array($this->get_course_module()->instance);
+        $cm = $this->get_course_module();
+        $context = get_context_instance(CONTEXT_COURSE, $cm->course);
+        $enrolleduserids = array_keys(get_enrolled_users($context, '', 0, 'u.id'));
+        
+        $params = array($cm->instance);
 
         return $DB->count_records_sql("SELECT COUNT('x')
                                        FROM {assign_submission} s
                                        LEFT JOIN {assign_grades} g ON s.assignment = g.assignment AND s.userid = g.userid
                                        WHERE s.assignment = ?
                                            AND s.timemodified IS NOT NULL
-                                           AND (s.timemodified > g.timemodified OR g.timemodified IS NULL)",
+                                           AND (s.timemodified > g.timemodified OR g.timemodified IS NULL)
+                                           AND s.userid IN (".implode(',',$enrolleduserids).")",
                                        $params);
     }
 
