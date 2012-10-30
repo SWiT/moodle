@@ -1075,14 +1075,19 @@ class assign {
         
         $currentgroup = groups_get_activity_group($this->get_course_module(), true);
         $users = array_keys( $this->list_participants($currentgroup, true));
-        list($userwhere, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_QM, 'user');
-        $where = 'userid ' . $userwhere;
+        if(count($users)>0){
+            list($userwhere, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_QM, 'user');
+            $userwhere = ' AND userid ' . $userwhere;
+        }else{
+            $userwhere = "";
+            $userparams = array();
+        }
         
         return $DB->count_records_sql("SELECT COUNT('x')
                                         FROM {assign_submission}
                                         WHERE assignment = ? 
                                             AND status = ?
-                                            AND $where", array_merge(array($this->get_course_module()->instance, $status), $userparams));
+                                            $userwhere", array_merge(array($this->get_course_module()->instance, $status), $userparams));
     }
 
     /**
