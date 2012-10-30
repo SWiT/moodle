@@ -1140,14 +1140,19 @@ class assign {
 
         $currentgroup = groups_get_activity_group($this->get_course_module(), true);
         $users = array_keys( $this->list_participants($currentgroup, true));
-        list($userwhere, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_QM, 'user');
-        $where = 'u.id ' . $userwhere;
+        if(count($users)>0){
+            list($userwhere, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_QM, 'user');
+            $userwhere = ' AND u.id ' . $userwhere;
+        }else{
+            $userwhere = "";
+            $userparams = array();
+        }
         
         return $DB->get_records_sql("SELECT a.*
                                     FROM {assign_submission} a, {user} u
                                     WHERE u.id = a.userid
                                         AND a.assignment = ?
-                                        AND $where
+                                        $userwhere
                                     ORDER BY $sort", array_merge(array($this->get_instance()->id), $userparams));
 
     }
