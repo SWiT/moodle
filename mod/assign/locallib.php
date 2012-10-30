@@ -1056,6 +1056,12 @@ class assign {
         $cm = $this->get_course_module();
         $context = get_context_instance(CONTEXT_COURSE, $cm->course);
         $enrolleduserids = array_keys(get_enrolled_users($context, '', 0, 'u.id'));
+        if(count($enrolleduserids)>0){
+            $enrolledsql = "AND s.userid IN (".implode(',',$enrolleduserids).")";
+        }else{
+            $enrolledsql = "";
+        }
+        
         
         $params = array($cm->instance);
 
@@ -1065,7 +1071,7 @@ class assign {
                                        WHERE s.assignment = ?
                                            AND s.timemodified IS NOT NULL
                                            AND (s.timemodified > g.timemodified OR g.timemodified IS NULL)
-                                           AND s.userid IN (".implode(',',$enrolleduserids).")",
+                                           $enrolledsql",
                                        $params);
     }
 
