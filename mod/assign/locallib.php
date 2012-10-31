@@ -1138,14 +1138,17 @@ class assign {
             $sort = "a.$sort $dir";
         }
 
-        $currentgroup = groups_get_activity_group($this->get_course_module(), true);
+        $cm = $this->get_course_module();
+        $params = array($cm->instance);
+        
+        $currentgroup = groups_get_activity_group($cm, true);
         $users = array_keys( $this->list_participants($currentgroup, true));
         if(count($users)>0){
             list($userwhere, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_QM, 'user');
-            $userwhere = ' AND u.id ' . $userwhere;
+            $userwhere = " AND u.id " . $userwhere;
+            $params = array_merge($params, $userparams);
         }else{
             $userwhere = "";
-            $userparams = array();
         }
         
         return $DB->get_records_sql("SELECT a.*
@@ -1153,7 +1156,8 @@ class assign {
                                     WHERE u.id = a.userid
                                         AND a.assignment = ?
                                         $userwhere
-                                    ORDER BY $sort", array_merge(array($this->get_instance()->id), $userparams));
+                                    ORDER BY $sort"
+                                    , $params);
 
     }
 
