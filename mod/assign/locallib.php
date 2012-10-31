@@ -1054,17 +1054,18 @@ class assign {
         global $DB;
 
         $cm = $this->get_course_module();
+        $params = array($cm->instance);
+        
         $context = get_context_instance(CONTEXT_COURSE, $cm->course);
         $enrolleduserids = array_keys(get_enrolled_users($context, '', 0, 'u.id'));
         if(count($enrolleduserids)>0){
-            $enrolledsql = "AND s.userid IN (".implode(',',$enrolleduserids).")";
+            list($enrolledsql, $enrolledparams) = $DB->get_in_or_equal($enrolleduserids, SQL_PARAMS_QM, 'user');
+            $enrolledsql = " AND s.userid " . $enrolledsql;
+            $params = array_merge($params, $enrolledparams);
         }else{
             $enrolledsql = "";
         }
         
-        
-        $params = array($cm->instance);
-
         return $DB->count_records_sql("SELECT COUNT('x')
                                        FROM {assign_submission} s
                                        LEFT JOIN {assign_grades} g ON s.assignment = g.assignment AND s.userid = g.userid
