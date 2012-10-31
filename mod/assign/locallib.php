@@ -1073,21 +1073,26 @@ class assign {
     public function count_submissions_with_status($status) {
         global $DB;
         
-        $currentgroup = groups_get_activity_group($this->get_course_module(), true);
+        $cm = $this->get_course_module();
+        
+        $params = array($cm->instance, $status);
+        
+        $currentgroup = groups_get_activity_group($cm, true);
         $users = array_keys( $this->list_participants($currentgroup, true));
         if(count($users)>0){
             list($userwhere, $userparams) = $DB->get_in_or_equal($users, SQL_PARAMS_QM, 'user');
             $userwhere = ' AND userid ' . $userwhere;
+            $params = array_merge($params, $userparams);
         }else{
             $userwhere = "";
-            $userparams = array();
         }
         
         return $DB->count_records_sql("SELECT COUNT('x')
                                         FROM {assign_submission}
                                         WHERE assignment = ? 
                                             AND status = ?
-                                            $userwhere", array_merge(array($this->get_course_module()->instance, $status), $userparams));
+                                            $userwhere"
+                                        , $params);
     }
 
     /**
