@@ -401,7 +401,7 @@ bank window's title is prominent enough*/
 #page-mod-quiz-edit.dir-rtl div.question {clear: right;}
 #page-mod-quiz-edit.dir-rtl div.question div.qnum {float: right;}
 #page-mod-quiz-edit.dir-rtl div.editq div.question div.content {float: right;height: 40px;}
-#page-mod-quiz-edit.dir-rtl div.question div.content div.points {left: 5px;right:auto;}
+#page-mod-quiz-edit.dir-rtl div.question div.content div.points {left: 50px;right:auto;}
 #page-mod-quiz-edit.dir-rtl div.question div.content div.questioncontrols {float: left;left: 0.3em; right:auto;}
 #page-mod-quiz-edit.dir-rtl .editq div.question div.content .singlequestion .questioneditbutton .questionname,
 #page-mod-quiz-edit.dir-rtl .editq div.question div.content .singlequestion .questioneditbutton .questiontext {float: right; padding-right: 0.3em;}
@@ -415,3 +415,6 @@ bank window's title is prominent enough*/
 #page-mod-quiz-edit.dir-rtl div.quizcontents {clear: right;float: right;}
 #page-mod-quiz-edit.dir-rtl .questionbankwindow.block {float: left;}
 #page-question-edit.dir-rtl td.creatorname, #page-question-edit.dir-rtl td.modifiername {text-align: center;}
+.path-question.dir-rtl input[name="maxmark"],
+.path-question-type.dir-rtl input[name="defaultmark"],
+#page-mod-quiz-edit.dir-rtl div.points input {direction: ltr;text-align: left;}
