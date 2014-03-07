@@ -204,6 +204,7 @@ class core_files_renderer extends plugin_renderer_base {
                 <div class="{!}fp-btn-add"><a role="button" title="'.$straddfile.'" href="#"><img src="'.$this->pix_url('a/add_file').'" alt="" /></a></div>
                 <div class="{!}fp-btn-mkdir"><a role="button" title="'.$strmakedir.'" href="#"><img src="'.$this->pix_url('a/create_folder').'" alt="" /></a></div>
                 <div class="{!}fp-btn-download"><a role="button" title="'.$strdownload.'" href="#"><img src="'.$this->pix_url('a/download_all').'" alt="" /></a></div>
+                <img class="{!}fp-img-downloading" src="'.$this->pix_url('i/loading_small').'" style="display:none;padding-top:3px;" alt="" />
             </div>
             <div class="{!}fp-viewbar">
                 <a title="'. get_string('displayicons', 'repository') .'" class="{!}fp-vb-icons" href="#"><img alt="" src="'. $this->pix_url('fp/view_icon_active', 'theme') .'" /></a>
