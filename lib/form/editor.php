@@ -117,6 +117,25 @@ class MoodleQuickForm_editor extends HTML_QuickForm_element {
     }
 
     /**
+     * Returns a 'safe' element's value
+     *
+     * @param  array $submitvalues  array of submitted values to search
+     * @param  bool $assoc whether to return the value as associative array
+     * @return mixed
+     */
+    public function exportValue(&$submitvalues, $assoc = false) {
+        $value = $this->_findValue($submitvalues);
+        if (null === $value) {
+            $value = $this->getValue();
+        }
+        if ($value['format'] === FORMAT_HTML) {
+            $value['text'] = make_well_formed_html($value['text']);
+        }
+        return $this->_prepareValue($value, $assoc);
+    }
+
+
+    /**
      * Sets name of editor
      *
      * @param string $name name of the editor

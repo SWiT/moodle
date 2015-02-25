@@ -388,6 +388,34 @@ class core_weblib_testcase extends advanced_testcase {
         $this->assertSame('lala xx', clean_text($text, FORMAT_HTML));
     }
 
+    public function test_make_well_formed_html() {
+        // Test that good html doesn't change
+        $goodhtml = "<div>Hello world</div><script type='text/javascript'>alert('Hello');</script><!-- this comment is OK -->";
+        $this->assertSame($goodhtml, make_well_formed_html($goodhtml));
+
+        // Test that excess closing </div> tags are replaced with white spaces
+        $excessdivhtml  = "<div>Hello world</div></div><div></div></div>";
+        $wellformedhtml = "<div>Hello world</div>      <div></div>      ";
+        $this->assertSame($wellformedhtml, make_well_formed_html($excessdivhtml));
+
+        // Test that unclosed comment tags are removed.
+        $unclosedcommenthtml    = "<div>Hello world</div><!-- style-junk:pasted; from:word;";
+        $wellformedhtml         = "<div>Hello world</div> style-junk:pasted; from:word;";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedcommenthtml));
+
+        // Test that unclosed script tags are removed.
+        $unclosedscripthtml = "<div>Hello world</div><script type='text/javascript'>alert('Hello');";
+        $wellformedhtml     = "<div>Hello world</div>alert('Hello');";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedscripthtml));
+        $unclosedscripthtml = '<div>Hello world</div><script type="text/javascript">alert("Hello");';
+        $wellformedhtml     = '<div>Hello world</div>alert("Hello");';
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedscripthtml));
+        $unclosedscripthtml = "<div>Hello world</div><script>alert('Hello');";
+        $wellformedhtml     = "<div>Hello world</div>alert('Hello');";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedscripthtml));
+
+    }
+
     public function test_qualified_me() {
         global $PAGE, $FULLME, $CFG;
         $this->resetAfterTest();

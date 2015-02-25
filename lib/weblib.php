@@ -1782,6 +1782,37 @@ function purify_html($text, $options = array()) {
 }
 
 /**
+ * Make the text into well-formed html. Remove unbalanced tags that break the moodle interface in ways that will not allow users
+ * to correct the bad html themselves.  Problem tags include unclosed html comments <!--, unclosed <script>, and excess closing </div> tags.
+ *
+ * @param string $text The (X)HTML string to make well-formed
+ * @return string
+ */
+function make_well_formed_html($text) {
+    $text = preg_replace("/<!--(?!.*?-->)/i", "", $text); // Remove unclosed comments.
+    $text = preg_replace("/<script\s*[^>]*?>(?!.*?<\/script\s*[^>]*?>)/i", "", $text); // Remove unclosed script tags.
+
+    // Get all opening and closing div tags.
+    $matches = array();
+    preg_match_all("/<div\s*[^>]*?>|<\/div\s*[^>]*?>/i", $text, $matches, PREG_OFFSET_CAPTURE);
+    // Measure the tags depths, +1 for an opening tag, -1 for a closing tag.
+    $depth = 0;
+    foreach ($matches[0] as $match) {
+        // If the tag is a closing tag subtract 1 from the depth else add 1 to the depth.
+        $depth += (substr_compare($match[0], "</", 0, 2) == 0) ? -1 : 1;
+        // If the depth is negative then replace the closing tag and reset the depth to 0.
+        // A negative depth means the tag is trying to close a div that doesn't belong to it.
+        // Replace the closing tag with a equal number of spaces so other matches won't need to recalculate their offsets.
+        if ($depth < 0) {
+            $taglength = strlen($match[0]);
+            $text = substr_replace($text, str_repeat(' ', $taglength), $match[1], $taglength);
+            $depth = 0;
+        }
+    }
+    return $text;
+}
+
+/**
  * Given plain text, makes it into HTML as nicely as possible.
  *
  * May contain HTML tags already.
