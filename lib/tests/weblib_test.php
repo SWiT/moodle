@@ -388,6 +388,47 @@ class core_weblib_testcase extends advanced_testcase {
         $this->assertSame('lala xx', clean_text($text, FORMAT_HTML));
     }
 
+    public function test_make_well_formed_html() {
+        // Test that good html doesn't change.
+        $goodhtml = '<div>Hello world</div><script type="text/javascript">alert("Hello");</script><!-- this comment is OK -->';
+        $this->assertSame($goodhtml, make_well_formed_html($goodhtml));
+
+        // Test that excess closing tags are removed.
+        $excessclosinghtml  = "<div>Hello world</div></div><div>OK</div></div></li></ul></ol></section>";
+        $wellformedhtml = "<div>Hello world</div><div>OK</div>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($excessclosinghtml));
+
+        // Test that unclosed comment tags are removed.
+        $unclosedcommenthtml    = "<div>Hello world</div><!-- style-junk:pasted; from:word;";
+        $wellformedhtml         = "<div>Hello world</div>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedcommenthtml));
+        $unclosedcommenthtml    = "<div><!-- bad comment </div><div>this will be removed</div>";
+        $wellformedhtml         = "<div></div>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedcommenthtml));
+
+        // Test that unclosed script tags are balanced.
+        $unclosedscripthtml = '<div>Hello world</div><script type="text/javascript">alert("Hello");';
+        $wellformedhtml     = '<div>Hello world</div><script type="text/javascript">alert("Hello");</script>';
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedscripthtml));
+        $unclosedscripthtml = "<div>Hello world</div><script>alert('Hello');";
+        $wellformedhtml     = "<div>Hello world</div><script>alert('Hello');</script>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedscripthtml));
+        // Tag attributes using single quotes are replaced with double quotes.
+        $unclosedscripthtml = "<div>Hello world</div><script type='text/javascript'>alert('Hello');";
+        $wellformedhtml     = "<div>Hello world</div><script type=\"text/javascript\">alert('Hello');</script>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedscripthtml));
+
+        // Test that unclosed html gets balanced.
+        $unclosedcommenthtml    = "<ul><li><div>Hello world";
+        $wellformedhtml         = "<ul><li><div>Hello world</div></li></ul>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($unclosedcommenthtml));
+
+        // Test that prepared tags aren't confused with our placeholder prepared tags used in make_well_formed_html().
+        $wellformedhtml    = "<prepared>for anything</prepared><div>Hello world</div>";
+        $this->assertSame($wellformedhtml, make_well_formed_html($wellformedhtml));
+
+    }
+
     public function test_qualified_me() {
         global $PAGE, $FULLME, $CFG;
         $this->resetAfterTest();
