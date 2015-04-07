@@ -1782,13 +1782,35 @@ function purify_html($text, $options = array()) {
 }
 
 /**
- * Make the text into well-formed html. Remove unbalanced tags that break the moodle interface in ways that will not allow users
- * to correct the bad html themselves.  Problem tags include unclosed html comments <!--, unclosed <script>, and excess closing </div> tags.
+ * Make the text into well-formed html. Remove or balance unbalanced tags that break the moodle interface in ways that will not
+ * allow users to correct the bad html themselves.
  *
  * @param string $text The (X)HTML string to make well-formed
  * @return string
  */
 function make_well_formed_html($text) {
+
+    // Use to tidy to make the html well formed if it is installed.
+    if (function_exists("tidy_repair_string")) {
+        $options = ['output-html' => true,
+            'show-body-only' => true,
+            'tidy-mark' => false,
+            'drop-proprietary-attributes' => true,
+            'drop-font-tags' => true,
+            'drop-empty-paras' => true,
+            'indent' => true,
+            'quiet' => true,
+            'new-blocklevel-tags' => 'article aside audio details figcaption figure footer header hgroup nav section source summary temp track video',
+            'new-empty-tags' => 'command embed keygen source track wbr',
+            'new-inline-tags' => 'audio canvas command datalist embed keygen mark meter output progress time video wbr',
+            ];
+        $text = tidy_repair_string($text, $options);
+        return $text;
+    }
+
+    // the PHP Tidy module has not been installed. Clean the code manually.
+    // Remove unbalanced tags that break the moodle interface in ways that will not allow users to correct the bad html themselves.
+    // Problem tags include unclosed html comments <!--, unclosed <script>, and excess closing </div> tags.
     $text = preg_replace("/<!--(?!.*?-->)/i", "", $text); // Remove unclosed comments.
     $text = preg_replace("/<script\s*[^>]*?>(?!.*?<\/script\s*[^>]*?>)/i", "", $text); // Remove unclosed script tags.
 
