@@ -1792,7 +1792,7 @@ function make_well_formed_html($text) {
 
     // Use to tidy to make the html well formed if it is installed.
     if (function_exists("tidy_repair_string")) {
-        $options = ['output-html' => true,
+        $options = ['output-xhtml' => true,
             'show-body-only' => true,
             'tidy-mark' => false,
             'drop-proprietary-attributes' => true,
