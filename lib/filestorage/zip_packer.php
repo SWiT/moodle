@@ -24,6 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+if (!defined('ZIP_PACKER_TIMEOUT')) {
+    define('ZIP_PACKER_TIMEOUT', 30);
+}
+
 require_once("$CFG->libdir/filestorage/file_packer.php");
 require_once("$CFG->libdir/filestorage/zip_archive.php");
 
@@ -104,6 +108,9 @@ class zip_packer extends file_packer {
 
         $abort = false;
         foreach ($files as $archivepath => $file) {
+            // Increase the server timeout to handle the creation of large zip files.
+            core_php_time_limit::raise(ZIP_PACKER_TIMEOUT);
+
             $archivepath = trim($archivepath, '/');
 
             // Record progress each time around this loop.
