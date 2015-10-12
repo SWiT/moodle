@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if (!defined('ZIP_PACKER_TIMEOUT')) {
-    define('ZIP_PACKER_TIMEOUT', 30);
+    define('ZIP_PACKER_TIMEOUT', 300);
 }
 
 require_once("$CFG->libdir/filestorage/file_packer.php");
