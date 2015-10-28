@@ -2042,6 +2042,12 @@ function send_temp_file($path, $filename, $pathisstring=false) {
         header('Pragma: no-cache');
     }
 
+    // The temp file could be large and could take a while to send, so raise the time limit.
+    if (!defined('SEND_TEMP_FILE_TIMEOUT')) {
+        define('SEND_TEMP_FILE_TIMEOUT', 300);
+    }
+    core_php_time_limit::raise(SEND_TEMP_FILE_TIMEOUT);
+
     // send the contents - we can not accelerate this because the file will be deleted asap
     if ($pathisstring) {
         readstring_accel($path, $mimetype, false);
